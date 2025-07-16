@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thai Binh Traditional Craft Villages</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            background: #f5f5f5;
+        }
+        #pdf-container {
+            width: 100%;
+            max-width: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        .pdf-page-container {
+            margin-bottom: 1px; /* Giữ lại 1px để phân biệt các trang */
+            background: white;
+            box-shadow: 0 0 0 1px #eee; /* Viền mờ giữa các trang */
+        }
+        .pdf-page {
+            display: block;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="pdf-container"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js';
+        
+        let pdfDoc = null;
+        let scale = 1;
+
+        async function renderAllPages() {
+            const url = 'https://hmtuan002.github.io/lasa/%C4%90%E1%BA%B6C%20S%E1%BA%A2N%20TH%C3%81I%20B%C3%8CNH_B%E1%BA%A2N%20VI%E1%BB%86T.pdf';
+            const container = document.getElementById('pdf-container');
+            
+            try {
+                pdfDoc = await pdfjsLib.getDocument(url).promise;
+                container.innerHTML = '';
+                
+                // Tính toán chiều rộng thực tế (trừ 2px cho border)
+                const containerWidth = document.documentElement.clientWidth - 2;
+                
+                for (let i = 1; i <= pdfDoc.numPages; i++) {
+                    const page = await pdfDoc.getPage(i);
+                    const viewport = page.getViewport({ scale: 1 });
+                    
+                    scale = containerWidth / viewport.width;
+                    const scaledViewport = page.getViewport({ scale: scale });
+                    
+                    const pageContainer = document.createElement('div');
+                    pageContainer.className = 'pdf-page-container';
+                    
+                    const canvas = document.createElement('canvas');
+                    canvas.className = 'pdf-page';
+                    canvas.height = scaledViewport.height;
+                    canvas.width = scaledViewport.width;
+                    
+                    pageContainer.appendChild(canvas);
+                    container.appendChild(pageContainer);
+                    
+                    page.render({
+                        canvasContext: canvas.getContext('2d'),
+                        viewport: scaledViewport
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading PDF:', error);
+                container.innerHTML = '<p style="color:red; padding:20px; text-align:center;">Error loading PDF document.</p>';
+            }
+        }
+
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if (pdfDoc) renderAllPages();
+            }, 100);
+        });
+
+        window.addEventListener('load', renderAllPages);
+    </script>
+</body>
+</html>

@@ -16,15 +16,42 @@
             max-width: 100%;
             margin: 0;
             padding: 0;
+            position: relative;
         }
         .pdf-page-container {
-            margin-bottom: 1px; /* Giữ lại 1px để phân biệt các trang */
+            margin-bottom: 1px;
             background: white;
-            box-shadow: 0 0 0 1px #eee; /* Viền mờ giữa các trang */
+            box-shadow: 0 0 0 1px #eee;
+            position: relative;
         }
         .pdf-page {
             display: block;
             width: 100%;
+        }
+        .video-embed-wrapper {
+            position: absolute;
+            width: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
+        .video-embed {
+            position: relative;
+            display: inline-flex;
+            pointer-events: auto;
+            transform-origin: top left;
+            gap: 50px; /* Khoảng cách giữa 2 video */
+        }
+        .video-wrapper {
+            flex: 0 0 auto;
+            aspect-ratio: 16/9;
+            width: 500px;
+        }
+        .video-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            background: #000;
         }
     </style>
 </head>
@@ -37,6 +64,9 @@
         
         let pdfDoc = null;
         let scale = 1;
+        const VIDEO_TOP_POSITION = 700; // Vị trí 400px từ đầu PDF
+        const VIDEO_WIDTH = 400; // Chiều rộng mỗi video
+        const VIDEO_GAP = 300; // Khoảng cách giữa 2 video
 
         async function renderAllPages() {
             const url = 'https://hmtuan002.github.io/lasa/Hung%20Yen%20Specialities.pdf';
@@ -46,7 +76,7 @@
                 pdfDoc = await pdfjsLib.getDocument(url).promise;
                 container.innerHTML = '';
                 
-                // Tính toán chiều rộng thực tế (trừ 2px cho border)
+                // Calculate container width
                 const containerWidth = document.documentElement.clientWidth - 2;
                 
                 for (let i = 1; i <= pdfDoc.numPages; i++) {
@@ -58,6 +88,7 @@
                     
                     const pageContainer = document.createElement('div');
                     pageContainer.className = 'pdf-page-container';
+                    pageContainer.style.height = `${scaledViewport.height}px`;
                     
                     const canvas = document.createElement('canvas');
                     canvas.className = 'pdf-page';
@@ -66,6 +97,44 @@
                     
                     pageContainer.appendChild(canvas);
                     container.appendChild(pageContainer);
+                    
+                    // Add videos to the first page only
+                    if (i === 1 && VIDEO_TOP_POSITION < scaledViewport.height) {
+                        const videoEmbedWrapper = document.createElement('div');
+                        videoEmbedWrapper.className = 'video-embed-wrapper';
+                        videoEmbedWrapper.style.top = `${VIDEO_TOP_POSITION * scale}px`;
+                        videoEmbedWrapper.style.height = `${VIDEO_WIDTH * 9/16 * scale}px`;
+                        
+                        const videoEmbed = document.createElement('div');
+                        videoEmbed.className = 'video-embed';
+                        videoEmbed.style.transform = `scale(${scale})`;
+                        
+                        // Calculate left position to center the videos
+                        const totalWidth = (VIDEO_WIDTH * 2 + VIDEO_GAP) * scale;
+                        const leftPosition = Math.max((containerWidth - totalWidth) / 2, 0);
+                        videoEmbed.style.left = `${leftPosition}px`;
+                        
+                        // First video
+                        const videoWrapper1 = document.createElement('div');
+                        videoWrapper1.className = 'video-wrapper';
+                        videoWrapper1.innerHTML = `
+                            <iframe class="video-iframe" src="https://www.youtube.com/embed/rD3w0mNOSCs" 
+                            frameborder="0" allowfullscreen></iframe>
+                        `;
+                        
+                        // Second video
+                        const videoWrapper2 = document.createElement('div');
+                        videoWrapper2.className = 'video-wrapper';
+                        videoWrapper2.innerHTML = `
+                            <iframe class="video-iframe" src="https://www.youtube.com/embed/eMIOBO5eyCc" 
+                            frameborder="0" allowfullscreen></iframe>
+                        `;
+                        
+                        videoEmbed.appendChild(videoWrapper1);
+                        videoEmbed.appendChild(videoWrapper2);
+                        videoEmbedWrapper.appendChild(videoEmbed);
+                        pageContainer.appendChild(videoEmbedWrapper);
+                    }
                     
                     page.render({
                         canvasContext: canvas.getContext('2d'),

@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trái Tim Ngọt Ngào - Quà tặng Rùa bé xinh yêu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: #6d3b47;
+            padding: 10px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hearts-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ff6b6b;
+            transform: rotate(45deg);
+            opacity: 0.3;
+        }
+        
+        .heart:before, .heart:after {
+            content: '';
+            width: 20px;
+            height: 20px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            position: absolute;
+        }
+        
+        .heart:before {
+            top: -10px;
+            left: 0;
+        }
+        
+        .heart:after {
+            top: 0;
+            left: -10px;
+        }
+        
+        h1 {
+            color: #e84393;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .subtitle {
+            color: #6d3b47;
+            margin-bottom: 20px;
+            font-size: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .game-area {
+            position: relative;
+            height: 300px;
+            border: 2px dashed #ff9a9e;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.7);
+            z-index: 1;
+        }
+        
+        .basket {
+            position: absolute;
+            bottom: 10px;
+            width: 120px;
+            height: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            background-image: url('https://i.giphy.com/Myrd44Ig6n4KiFlgq2.webp');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+        
+        .falling-heart {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: #ff6b6b;
+            transform: rotate(45deg);
+            top: -50px;
+            border-radius: 5px;
+            z-index: 5;
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        
+        .falling-heart:before, .falling-heart:after {
+            content: '';
+            width: 40px;
+            height: 40px;
+            background: #ff6b6b;
+            border-radius: 50%;
+            position: absolute;
+        }
+        
+        .falling-heart:before {
+            top: -20px;
+            left: 0;
+        }
+        
+        .falling-heart:after {
+            top: 0;
+            left: -20px;
+        }
+        
+        .falling-heart:hover {
+            transform: rotate(45deg) scale(1.2);
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .score, .timer {
+            background-color: #fd79a8;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+        
+        .start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            border-radius: 15px;
+        }
+        
+        .result-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 25;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        button {
+            background: linear-gradient(to right, #e84393, #fd79a8);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 15px;
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .special-name {
+            color: #e84393;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .result-title {
+            color: #e84393;
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+        
+        .result-message {
+            margin-bottom: 15px;
+            line-height: 1.6;
+            text-align: center;
+        }
+        
+        .final-score {
+            font-size: 1.3rem;
+            color: #e84393;
+            font-weight: bold;
+            margin: 15px 0;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 400px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .game-area {
+                height: 250px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 8px;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hearts-bg" id="heartsBg"></div>
+        
+        <h1>Trái Tim Ngọt Ngào</h1>
+        <p class="subtitle">Dành tặng <span class="special-name">Rùa bé xinh yêu</span> nhân ngày 20/10</p>
+        
+        <div class="controls">
+            <div class="score">Trái tim: <span id="score">0</span>/11</div>
+            <div class="timer">Thời gian: <span id="timer">45</span>s</div>
+        </div>
+        
+        <div class="game-area" id="gameArea">
+            <div class="start-screen" id="startScreen">
+                <p>Hãy bắt 11 trái tim để nhận lời chúc đặc biệt!</p>
+                <button id="startBtn">Bắt đầu</button>
+            </div>
+            
+            <div class="result-screen" id="resultScreen">
+                <h2 class="result-title">11/11 trái tim! Only and Only</h2>
+                <div class="final-score">hihi, Rùa bé xinh yêu đã bắt được tất cả 11 trái tim ruifiiiii!</div>
+                <div class="result-message">
+                    <p>Nhân ngày Phụ nữ Việt Nam 20/10, meomeo chúc em luôn xinh đẹp, hạnh phúc và thành công. Cảm ơn em đã đến bên mèo và mang đến những điều tuyệt vời nhất. Mỗi ngày bên em là một ngày hạnh phúc. Mèo chỉ muốn nói là yêu em nhiều lém ạaaaaaaaaa</p>
+                    <p>❤️ 11 trái tim = 1 tình yêu trọn vẹn cho 1 người ❤️</p>
+                </div>
+                <button id="restartBtn">Chơi lại</button>
+            </div>
+            
+            <div class="basket" id="basket"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const gameArea = document.getElementById('gameArea');
+            const basket = document.getElementById('basket');
+            const scoreElement = document.getElementById('score');
+            const timerElement = document.getElementById('timer');
+            const startBtn = document.getElementById('startBtn');
+            const startScreen = document.getElementById('startScreen');
+            const resultScreen = document.getElementById('resultScreen');
+            const restartBtn = document.getElementById('restartBtn');
+            const heartsBg = document.getElementById('heartsBg');
+            
+            let score = 0;
+            let timeLeft = 45;
+            let gameInterval;
+            let heartInterval;
+            let isGameRunning = false;
+            
+            // Tạo trái tim nền
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.top = Math.random() * 100 + '%';
+                heart.style.width = '20px';
+                heart.style.height = '20px';
+                heart.style.opacity = Math.random() * 0.5 + 0.1;
+                heartsBg.appendChild(heart);
+            }
+            
+            // Di chuyển giỏ bằng chuột
+            gameArea.addEventListener('mousemove', function(e) {
+                if (!isGameRunning) return;
+                
+                const rect = gameArea.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                basket.style.left = Math.min(Math.max(x - 60, 0), gameArea.offsetWidth - 120) + 'px';
+            });
+            
+            // Di chuyển giỏ bằng cảm ứng trên mobile
+            gameArea.addEventListener('touchmove', function(e) {
+                if (!isGameRunning) return;
+                
+                e.preventDefault();
+                const rect = gameArea.getBoundingClientRect();
+                const x = e.touches[0].clientX - rect.left;
+                basket.style.left = Math.min(Math.max(x - 60, 0), gameArea.offsetWidth - 120) + 'px';
+            });
+            
+            // Bắt đầu game
+            startBtn.addEventListener('click', startGame);
+            
+            // Chơi lại
+            restartBtn.addEventListener('click', function() {
+                resultScreen.style.display = 'none';
+                startScreen.style.display = 'flex';
+                score = 0;
+                scoreElement.textContent = score;
+                timeLeft = 45;
+                timerElement.textContent = timeLeft;
+            });
+            
+            function startGame() {
+                // Ẩn màn hình bắt đầu
+                startScreen.style.display = 'none';
+                
+                // Reset game
+                score = 0;
+                timeLeft = 45;
+                scoreElement.textContent = score;
+                timerElement.textContent = timeLeft;
+                
+                // Xóa các trái tim cũ
+                const hearts = document.querySelectorAll('.falling-heart');
+                hearts.forEach(heart => heart.remove());
+                
+                isGameRunning = true;
+                
+                // Bắt đầu đếm thời gian
+                gameInterval = setInterval(function() {
+                    timeLeft--;
+                    timerElement.textContent = timeLeft;
+                    
+                    if (timeLeft <= 0) {
+                        endGame();
+                    }
+                }, 1000);
+                
+                // Tạo trái tim rơi
+                heartInterval = setInterval(createHeart, 800);
+            }
+            
+            function createHeart() {
+                if (!isGameRunning) return;
+                
+                const heart = document.createElement('div');
+                heart.className = 'falling-heart';
+                
+                // Random vị trí
+                const leftPos = Math.random() * (gameArea.offsetWidth - 40);
+                heart.style.left = leftPos + 'px';
+                
+                // Màu cố định - không đổi màu
+                heart.style.background = '#ff6b6b';
+                
+                gameArea.appendChild(heart);
+                
+                // Animation rơi
+                let topPos = -50;
+                const fallInterval = setInterval(function() {
+                    if (!isGameRunning) {
+                        clearInterval(fallInterval);
+                        return;
+                    }
+                    
+                    topPos += 3;
+                    heart.style.top = topPos + 'px';
+                    
+                    // Kiểm tra va chạm với giỏ
+                    const basketRect = basket.getBoundingClientRect();
+                    const heartRect = heart.getBoundingClientRect();
+                    
+                    if (
+                        heartRect.bottom >= basketRect.top &&
+                        heartRect.top <= basketRect.bottom &&
+                        heartRect.right >= basketRect.left &&
+                        heartRect.left <= basketRect.right
+                    ) {
+                        // Bắt được trái tim
+                        score++;
+                        scoreElement.textContent = score;
+                        heart.remove();
+                        clearInterval(fallInterval);
+                        
+                        // Hiệu ứng khi bắt được
+                        createParticles(heartRect.left + 20, heartRect.top + 20);
+                        
+                        // Kiểm tra nếu đủ 11 trái tim
+                        if (score >= 11) {
+                            endGame();
+                        }
+                    }
+                    
+                    // Nếu rơi ra ngoài
+                    if (topPos > gameArea.offsetHeight) {
+                        heart.remove();
+                        clearInterval(fallInterval);
+                    }
+                }, 20);
+                
+                // Click vào trái tim để bắt (dự phòng)
+                heart.addEventListener('click', function() {
+                    score++;
+                    scoreElement.textContent = score;
+                    heart.remove();
+                    clearInterval(fallInterval);
+                    
+                    // Hiệu ứng khi bắt được
+                    const heartRect = heart.getBoundingClientRect();
+                    createParticles(heartRect.left + 20, heartRect.top + 20);
+                    
+                    // Kiểm tra nếu đủ 11 trái tim
+                    if (score >= 11) {
+                        endGame();
+                    }
+                });
+            }
+            
+            function createParticles(x, y) {
+                for (let i = 0; i < 6; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'heart';
+                    particle.style.position = 'absolute';
+                    particle.style.left = x + 'px';
+                    particle.style.top = y + 'px';
+                    particle.style.width = '10px';
+                    particle.style.height = '10px';
+                    particle.style.background = '#ff6b6b';
+                    particle.style.opacity = '1';
+                    particle.style.zIndex = '10';
+                    
+                    gameArea.appendChild(particle);
+                    
+                    // Animation particle
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 2 + Math.random() * 3;
+                    const vx = Math.cos(angle) * speed;
+                    const vy = Math.sin(angle) * speed;
+                    
+                    let particleX = x;
+                    let particleY = y;
+                    const particleInterval = setInterval(function() {
+                        particleX += vx;
+                        particleY += vy;
+                        particle.style.left = particleX + 'px';
+                        particle.style.top = particleY + 'px';
+                        particle.style.opacity = parseFloat(particle.style.opacity) - 0.03;
+                        
+                        if (parseFloat(particle.style.opacity) <= 0) {
+                            particle.remove();
+                            clearInterval(particleInterval);
+                        }
+                    }, 30);
+                }
+            }
+            
+            function endGame() {
+                isGameRunning = false;
+                clearInterval(gameInterval);
+                clearInterval(heartInterval);
+                
+                // Hiển thị màn hình kết quả
+                resultScreen.style.display = 'flex';
+                
+                // Xóa các trái tim còn lại
+                const hearts = document.querySelectorAll('.falling-heart');
+                hearts.forEach(heart => heart.remove());
+            }
+        });
+    </script>
+</body>
+</html>
